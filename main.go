@@ -38,6 +38,10 @@ func main() {
 	}
 }
 
+/*
+rest token to test
+curl --header "Content-Type: application/json" --header "Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiZXhwIjoxNjI5NTc1Mzg1LCJuYW1lIjoiSm9obiBEb2UifQ.Vf0zI0YQADwvFUYrFxaRQLEgRdL0qXW_aRRafWPH5ZZR4fr4EECRHhsMSV4Gv27GbjYEwfSuAIhnlrK2AitAPw" --request GET --data '{"email": "email","password": "password"}' http://localhost:3000/hello
+ */
 func hello(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"status": "okay",
@@ -57,6 +61,10 @@ func buildNewSecret() {
 	println("secret: " + secret)
 }
 
+/*
+rest token to test
+curl --header "Content-Type: application/json" --header "Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiZXhwIjoxNjI5NTc1Mzg1LCJuYW1lIjoiSm9obiBEb2UifQ.Vf0zI0YQADwvFUYrFxaRQLEgRdL0qXW_aRRafWPH5ZZR4fr4EECRHhsMSV4Gv27GbjYEwfSuAIhnlrK2AitAPw" --request GET --data '{"email": "email","password": "password"}' http://localhost:3000/user
+ */
 func returnUser(c *fiber.Ctx) error {
 	user := c.Locals("user").(*jwt.Token)
 	claims := user.Claims.(jwt.MapClaims)
@@ -65,6 +73,9 @@ func returnUser(c *fiber.Ctx) error {
 	return c.SendString("Welcome " + name + " admin: " + strconv.FormatBool(isAdmin))
 }
 
+/*
+curl --header "Content-Type: application/json" --request GET --data '{"email": "email","password": "password"}' http://localhost:3000/login
+ */
 func login(ctx *fiber.Ctx) error {
 	type request struct {
 		Email    string `json:"email"`
