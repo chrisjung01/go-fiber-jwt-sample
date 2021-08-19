@@ -11,13 +11,6 @@ import (
 	"time"
 )
 
-func authorizeRequired() func(ctx *fiber.Ctx) error {
-	return jwtware.New(jwtware.Config{
-		SigningKey:    []byte(secret),
-		SigningMethod: "HS512",
-	})
-}
-
 var secret string
 
 func main() {
@@ -26,28 +19,31 @@ func main() {
 	// create a new fiber app
 	app := fiber.New()
 
+	//Add route that need a valid jwt token
 	app.Get("/user", authorizeRequired(), returnUser)
 
+	// Add a route that create a jwt token
 	app.Get("/login", login)
 
+	//Add route that need a valid jwt token
 	app.Get("/hello", authorizeRequired(), hello)
 
+	// start the server
 	err := app.Listen(":3000")
 	if err != nil {
 		log.Println(err.Error())
 	}
 }
 
-/*
-rest token to test
-curl --header "Content-Type: application/json" --header "Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiZXhwIjoxNjI5NTc1Mzg1LCJuYW1lIjoiSm9obiBEb2UifQ.Vf0zI0YQADwvFUYrFxaRQLEgRdL0qXW_aRRafWPH5ZZR4fr4EECRHhsMSV4Gv27GbjYEwfSuAIhnlrK2AitAPw" --request GET --data '{"email": "email","password": "password"}' http://localhost:3000/hello
- */
-func hello(c *fiber.Ctx) error {
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{
-		"status": "okay",
+// authorizeRequired check the jwt token that needs to set as Bearer Authentication header
+func authorizeRequired() func(ctx *fiber.Ctx) error {
+	return jwtware.New(jwtware.Config{
+		SigningKey:    []byte(secret),
+		SigningMethod: "HS512",
 	})
 }
 
+// buildNewSecret create a new random secret. This secret is used for this session.
 func buildNewSecret() {
 	var hmacSampleSecret = make([]byte, 256)
 
@@ -62,7 +58,21 @@ func buildNewSecret() {
 }
 
 /*
-rest token to test
+hello  curl function to test this function.
+Just replace the token.
+
+curl --header "Content-Type: application/json" --header "Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiZXhwIjoxNjI5NTc1Mzg1LCJuYW1lIjoiSm9obiBEb2UifQ.Vf0zI0YQADwvFUYrFxaRQLEgRdL0qXW_aRRafWPH5ZZR4fr4EECRHhsMSV4Gv27GbjYEwfSuAIhnlrK2AitAPw" --request GET --data '{"email": "email","password": "password"}' http://localhost:3000/hello
+ */
+func hello(c *fiber.Ctx) error {
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"status": "okay",
+	})
+}
+
+/*
+returnUser curl function to test this function.
+Just replace the token.
+
 curl --header "Content-Type: application/json" --header "Authorization: Bearer eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhZG1pbiI6dHJ1ZSwiZXhwIjoxNjI5NTc1Mzg1LCJuYW1lIjoiSm9obiBEb2UifQ.Vf0zI0YQADwvFUYrFxaRQLEgRdL0qXW_aRRafWPH5ZZR4fr4EECRHhsMSV4Gv27GbjYEwfSuAIhnlrK2AitAPw" --request GET --data '{"email": "email","password": "password"}' http://localhost:3000/user
  */
 func returnUser(c *fiber.Ctx) error {
@@ -74,6 +84,9 @@ func returnUser(c *fiber.Ctx) error {
 }
 
 /*
+login curl function to test this function.
+Just save the token for the other requests.
+
 curl --header "Content-Type: application/json" --request GET --data '{"email": "email","password": "password"}' http://localhost:3000/login
  */
 func login(ctx *fiber.Ctx) error {
